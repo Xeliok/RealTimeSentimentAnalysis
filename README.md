@@ -11,10 +11,10 @@ This project implements a real-time data streaming architecture to analyze the s
 
 ## 🛠️ 1. Prerequisites (Infrastructure)
 Before running the Python code, make sure the basic infrastructure is installed and running on your local machine (Windows):
-1. **Hadoop** (configured with the `HADOOP_HOME` environment variables).
-2. **Apache Kafka** (version 4.2.0 in KRaft mode). The `tweets_stream` topic must be created beforehand.
-3. **Apache Spark** (version 4.1.1 configured with Hadoop 3 and added to the `PATH`).
-4. **Python** (version 3.8 or higher).
+1. **Hadoop** (configured with the `HADOOP_HOME` environment variables, specifically `winutils.exe` for Windows).
+2. **Apache Kafka** (Ensure the `tweets_stream` topic is created beforehand).
+3. **Apache Spark** (version **3.5.8** configured with Hadoop and added to the `PATH`).
+4. **Python** (version **3.11** is highly recommended. Do NOT use 3.14 as it is currently causing compatibility issues).
 
 ---
 
@@ -67,9 +67,16 @@ python -m venv venv
 ---
 
 ## 📦 5. Install Python libraries
-Once the `(venv)` environment is activated, install the required tools for the project:
+Once the `(venv)` environment is activated, install the exact package versions required for this project. 
+*(Note: `pandas` and `pyarrow` are necessary for PySpark's `pandas_udf` to execute properly).*
+
 ```bash
-pip install kafka-python pyspark vaderSentiment
+pip install kafka-python==2.3.1 pyspark==3.5.8 vaderSentiment==3.3.2 pandas==3.0.3 pyarrow==24.0.0
+```
+
+*Alternatively, if a `requirements.txt` file is present, you can run:*
+```bash
+pip install -r requirements.txt
 ```
 
 ---
@@ -79,8 +86,13 @@ pip install kafka-python pyspark vaderSentiment
 The pipeline must be launched in a very specific order. You will need to open **3 separate terminals**.
 
 ### Terminal 1: Start the Kafka server (The mailbox)
-Go to your Kafka installation folder (e.g., `H:\BigData\kafka_2.13-4.2.0\`) and start the server:
+Go to your Kafka installation folder and start the server. 
+*(Depending on whether you use Zookeeper or KRaft, the command may vary. Below is an example for Zookeeper on Windows)*:
 ```bash
+# Start Zookeeper (if not using KRaft)
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+
+# Start Kafka Server
 .\bin\windows\kafka-server-start.bat .\config\server.properties
 ```
 *(Wait for the message indicating the server has started. Leave this terminal running in the background).*
@@ -97,4 +109,4 @@ In a third VSCode terminal (still with the `venv` environment activated), launch
 ```bash
 python consumer.py
 ```
-*(Spark will connect to Kafka, analyze the sentiments with VADER, and display the aggregated result every 10 seconds).*
+*(Spark will connect to Kafka, analyze the sentiments with VADER using pandas UDFs, and display the aggregated result every 10 seconds).*
