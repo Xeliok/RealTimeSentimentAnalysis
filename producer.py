@@ -5,10 +5,10 @@ from datetime import datetime
 from kafka import KafkaProducer
 
 def json_serializer(data):
-    """Sérialise les données en JSON et les encode en UTF-8 pour Kafka."""
+    """Serialize the data into JSON and encode it in UTF-8 for Kafka."""
     return json.dumps(data).encode('utf-8')
 
-# Configuration du producteur Kafka
+# Kafka Producer Configuration
 producer = KafkaProducer(
     bootstrap_servers=['localhost:9092'],
     value_serializer=json_serializer
@@ -16,41 +16,41 @@ producer = KafkaProducer(
 
 topic_name = 'tweets_stream'
 
-# Liste de phrases factices pour simuler différents sentiments
+# English sample tweets list for VADER sentiment analysis
 sample_tweets = [
-    "J'adore cette nouvelle fonctionnalité, c'est génial !",   # Positif
-    "C'est la pire expérience que j'ai jamais eue...",       # Négatif
-    "Le temps est nuageux aujourd'hui.",                     # Neutre
-    "Je suis très content de mon achat.",                    # Positif
-    "Service client misérable, je suis très déçu.",          # Négatif
-    "Juste un message normal pour tester le système.",       # Neutre
-    "Incroyable ! Je recommande vivement ce produit.",       # Positif
-    "Rien à signaler de particulier aujourd'hui.",           # Neutre
-    "Je déteste quand ça bugge comme ça.",                   # Négatif
-    "Une journée fantastique commence !"                     # Positif
+    "I love this new feature, it is absolutely brilliant!",    # Positive
+    "This is the worst experience I have ever had...",         # Negative
+    "The weather is quite cloudy and gray today.",             # Neutral
+    "I am incredibly happy and satisfied with my purchase.",   # Positive
+    "Miserable customer service, I am deeply disappointed.",   # Negative
+    "Just a standard automated message to test the system.",  # Neutral
+    "Amazing product! I highly recommend it to everyone.",     # Positive
+    "Nothing special to report about my day today.",           # Neutral
+    "I absolutely hate it when the application bugs like this.",# Negative
+    "A fantastic and beautiful day is starting right now!"     # Positive
 ]
 
-print(f"Démarrage du Data Producer. Envoi des messages vers le topic '{topic_name}'...")
+print(f"Starting Data Producer. Sending messages to topic '{topic_name}'...")
 
 try:
     while True:
-        # Sélection aléatoire d'un tweet
+        # Select a random tweet
         tweet_text = random.choice(sample_tweets)
         
-        # Création du dictionnaire représentant le tweet
+        # Create the tweet data dictionary
         tweet_data = {
             "text": tweet_text,
             "timestamp": datetime.now().isoformat()
         }
         
-        # Envoi vers le topic Kafka
+        # Send data to Kafka topic
         producer.send(topic_name, value=tweet_data)
-        print(f"Message envoyé : {tweet_data}")
+        print(f"Message sent: {tweet_data}")
         
-        # Pause de 1 seconde pour simuler un flux continu mais lisible
+        # 1-second pause to simulate a continuous but readable stream
         time.sleep(1)
 except KeyboardInterrupt:
-    print("\nArrêt du producer demandé par l'utilisateur.")
+    print("\nProducer stopped by user.")
 finally:
-    # Fermeture propre du producer
+    # Clean closure of the producer
     producer.close()
