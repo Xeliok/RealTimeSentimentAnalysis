@@ -28,8 +28,8 @@ def main():
     spark_version = pyspark.__version__
     kafka_package = f"org.apache.spark:spark-sql-kafka-0-10_2.12:{spark_version}"
 
-    print(f"Version de PySpark detectee : {spark_version}")
-    print(f"Telechargement du connecteur Kafka : {kafka_package}")
+    print(f"Detected PySpark Version: {spark_version}")
+    print(f"Downloading Kafka Connector: {kafka_package}")
 
     java_options = (
         "--add-opens=java.base/java.lang=ALL-UNNAMED "
@@ -65,7 +65,7 @@ def main():
         StructField("timestamp", TimestampType(), True)
     ])
 
-    print("Connexion a Kafka et attente des donnees...")
+    print("Connecting to Kafka and waiting for streaming data...")
 
     df_kafka = spark \
         .readStream \
